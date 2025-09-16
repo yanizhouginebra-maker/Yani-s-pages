@@ -1,0 +1,158 @@
+<!-- 可爱小狗换装 Web App (纯HTML + JS版本) -->
+<!-- 保存为 dog.html，直接双击即可在浏览器打开 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>可爱小狗换装</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: linear-gradient(to bottom, #fff0f5, #f0f8ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .app {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(6px);
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .dog-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .dog-wrapper {
+      position: relative;
+      width: 300px;
+      height: 300px;
+    }
+    .controls {
+      width: 200px;
+    }
+    .controls button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f8f8f8;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .controls button:hover {
+      background: #eee;
+    }
+    .controls button.active {
+      background: #cce0ff;
+      border-color: #6699ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>可爱小狗换装 🎀</h1>
+    <p>点击按钮给小狗换装</p>
+    <div class="container">
+      <div class="dog-area">
+        <div class="dog-wrapper">
+          <!-- 小狗主体SVG -->
+          <svg id="dog" viewBox="0 0 200 200" width="300" height="300">
+            <!-- Ears -->
+            <ellipse cx="60" cy="45" rx="20" ry="32" fill="#a66" transform="rotate(-15 60 45)" />
+            <ellipse cx="140" cy="45" rx="20" ry="32" fill="#a66" transform="rotate(15 140 45)" />
+
+            <!-- Head -->
+            <circle cx="100" cy="80" r="44" fill="#e9c6a6" stroke="#c58f6b" stroke-width="2" />
+            <path d="M92 60 q8 -12 16 0" fill="none" stroke="#c58f6b" stroke-width="3" stroke-linecap="round" />
+
+            <!-- Eyes -->
+            <circle cx="86" cy="78" r="6" fill="#2b2b2b" />
+            <circle cx="114" cy="78" r="6" fill="#2b2b2b" />
+            <circle cx="83" cy="76" r="2" fill="#fff" />
+            <circle cx="111" cy="76" r="2" fill="#fff" />
+
+            <!-- Muzzle -->
+            <ellipse cx="100" cy="96" rx="18" ry="12" fill="#fff7f2" />
+            <ellipse cx="100" cy="98" rx="6" ry="4" fill="#2b2b2b" />
+
+            <!-- Body -->
+            <ellipse cx="100" cy="150" rx="56" ry="46" fill="#e9c6a6" stroke="#c58f6b" stroke-width="2" />
+
+            <!-- Tail -->
+            <path d="M150 140 q30 -10 20 -40" stroke="#c58f6b" stroke-width="8" stroke-linecap="round" fill="none" />
+
+            <!-- Paws -->
+            <ellipse cx="70" cy="185" rx="12" ry="6" fill="#e9c6a6" />
+            <ellipse cx="130" cy="185" rx="12" ry="6" fill="#e9c6a6" />
+
+            <!-- Outfits -->
+            <g id="sweater" style="display:none">
+              <path d="M50 130 q50 40 100 0 v-26 q-40 -10 -100 0 z" fill="#ff6b6b" />
+              <rect x="52" y="120" width="96" height="8" rx="4" fill="#ff5252" />
+              <text x="100" y="150" text-anchor="middle" font-size="10" fill="#fff">毛衣</text>
+            </g>
+
+            <g id="raincoat" style="display:none">
+              <path d="M44 118 q56 56 112 0 v-34 q-40 -6 -112 0 z" fill="#5577ff" />
+              <path d="M82 100 q18 -12 36 0" stroke="#dce8ff" stroke-width="4" stroke-linecap="round" fill="none" />
+              <text x="100" y="150" text-anchor="middle" font-size="10" fill="#eaf2ff">雨衣</text>
+            </g>
+
+            <g id="party" style="display:none">
+              <polygon points="100,40 118,18 82,18" fill="#ffd166" stroke="#ff8f00" stroke-width="1" />
+              <circle cx="100" cy="18" r="4" fill="#ff6b6b" />
+            </g>
+
+            <!-- Blush -->
+            <circle cx="78" cy="92" r="3" fill="#ffd6d6" />
+            <circle cx="122" cy="92" r="3" fill="#ffd6d6" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button data-outfit="none" class="active">不穿衣服</button>
+        <button data-outfit="sweater">红色毛衣</button>
+        <button data-outfit="raincoat">蓝色雨衣</button>
+        <button data-outfit="party">派对帽子</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('.controls button');
+    const outfits = ['sweater','raincoat','party'];
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const outfit = btn.dataset.outfit;
+        outfits.forEach(id => {
+          document.getElementById(id).style.display = (outfit === id) ? 'block' : 'none';
+        });
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
